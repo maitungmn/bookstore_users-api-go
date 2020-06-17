@@ -2,6 +2,8 @@ package services
 
 import (
 	"github.com/maitungmn/bookstore_users-api-go/domain/users"
+	"github.com/maitungmn/bookstore_users-api-go/utils/crypto_utils"
+	"github.com/maitungmn/bookstore_users-api-go/utils/date_utils"
 	"github.com/maitungmn/bookstore_users-api-go/utils/errors"
 )
 
@@ -19,6 +21,10 @@ func CreateUser(user users.User) (*users.User, *errors.RestErr) {
 	if err := user.Validate(); err != nil {
 		return nil, err
 	}
+
+	user.Status = users.StatusActive
+	user.DateCreated = date_utils.GetNowDBFormat()
+	user.Password = crypto_utils.GetMd5(user.Password)
 
 	if err := user.Save(); err != nil {
 		return nil, err
@@ -64,4 +70,9 @@ func DeleteUser(userID int64) *errors.RestErr {
 		ID: userID,
 	}
 	return user.Delete()
+}
+
+func Search(status string) (users.Users, *errors.RestErr) {
+	dao := &users.User{}
+	return dao.FindByStatus(status)
 }
