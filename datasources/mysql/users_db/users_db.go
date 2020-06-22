@@ -3,6 +3,8 @@ package users_db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
+	"github.com/maitungmn/bookstore_utils-go/logger"
 	"log"
 	"os"
 
@@ -49,10 +51,11 @@ func init() {
 	var err error
 	Client, err = sql.Open("mysql", dataSourceName)
 	if err != nil {
-		// panic(err)
+		panic(err)
 	}
 	if err = Client.Ping(); err != nil {
-		// panic(err)
+		panic(err)
 	}
+	mysql.SetLogger(logger.GetLogger())
 	log.Println("database successfully configured")
 }
